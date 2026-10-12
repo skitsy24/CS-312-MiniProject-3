@@ -23,7 +23,7 @@ app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
 
 const posts = [];
-let nextId = 1;
+
 
 
 app.get("/", async (req, res) => {
@@ -34,19 +34,24 @@ app.get("/", async (req, res) => {
     res.render("index", { posts: result.rows});
 });
 
-app.post("/posts", (req, res) => {
-    const newPost = {
-        id: nextId,
-        author: req.body.author,
-        title: req.body.title,
-        content: req.body.content,
-        createdAt: new Date()
-    };
-    posts.push(newPost);
+app.post("/posts", async (req, res) => {
 
-    nextId++;
-    
+    const title = req.body.title;
+    const body = req.body.content;
+
+    // temp, no login yet
+    const creatorUserId = "ohyeah?";
+    const creatorName = "Steve Lacy";
+
+    await db.query(
+        `INSERT INTO blogs
+        (creator_name, creator_user_id, title, body, date_created)
+        VALUES ($1, $2, $3, $4, NOW())`,
+        [creatorName, creatorUserId, title, body]
+    );
+
     res.redirect("/");
+
 });
 
 app.get("/posts/:id/edit", (req, res) => {
