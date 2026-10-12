@@ -1,4 +1,16 @@
 import express from "express";
+import pg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const db = new pg.Pool({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME
+});
 
 const app = express();
 const port = 3000;
@@ -14,8 +26,12 @@ const posts = [];
 let nextId = 1;
 
 
-app.get("/", (req, res) => {
-  res.render("index", { posts: posts});
+app.get("/", async (req, res) => {
+    const result = await db.query("SELECT * FROM blogs");   
+
+    console.log(result.rows);
+
+    res.render("index", { posts: result.rows});
 });
 
 app.post("/posts", (req, res) => {
