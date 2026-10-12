@@ -43,19 +43,19 @@
         <p class="post-meta">By <%= post.creator_name %></p>
         <p class="post-content"><%= post.body %></p>
 
-        <div class="post-actions d-flex align-items-center gap-3">
-          <!-- EDIT -->
-          <a href="/posts/<%= post.blog_id %>/edit">
-            Edit<span class="visually-hidden"> <%= post.title %></span>
-          </a>
+        <% if (currentUser && currentUser.userId === post.creator_user_id) { %>
+          <div class="post-actions d-flex align-items-center gap-3">
+            <a href="/posts/<%= post.blog_id %>/edit">
+              Edit<span class="visually-hidden"> <%= post.title %></span>
+            </a>
 
-          <!-- DELETE -->
-          <form action="/posts/<%= post.blog_id %>/delete" method="POST">
-            <button type="submit" class="delete-link">
-              Delete<span class="visually-hidden"> <%= post.title %></span>
-            </button>
-          </form>
-        </div>
+            <form action="/posts/<%= post.blog_id %>/delete" method="POST">
+              <button type="submit" class="delete-link">
+                Delete<span class="visually-hidden"> <%= post.title %></span>
+              </button>
+            </form>
+          </div>
+        <% } %>
       </article>
     <% }); %>
   <% } %>

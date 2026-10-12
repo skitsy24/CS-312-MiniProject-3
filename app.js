@@ -34,7 +34,14 @@ app.use((req, res, next) => {
     next();
 });
 
-const posts = [];
+// middleware to require login for editing
+function requireLogin(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect("/signin");
+    }
+
+    next();
+}
 
 app.get("/signup", (req, res) => {
     res.render("signup", { error: null, userId: "", name: "" });
@@ -129,39 +136,60 @@ app.post("/posts", async (req, res) => {
 
 });
 
-app.get("/posts/:id/edit", (req, res) => {
-    // convert id to number
-    const id = Number(req.params.id);
-    // find post object in posts array
-    const post = posts.find(post => post.id === id);
-    // render edit page of that post
-    res.render("edit", { post: post });
-})
+app.get("/posts/:id/edit", requireLogin, async (req, res) => {
+    const id = req.params.id;
 
-app.post("/posts/:id/edit", (req, res) => {
-    // convert id to number
-    const id = Number(req.params.id);
-    // find post object in posts array
-    const post = posts.find(post => post.id === id);
-    // save new changes
-    post.author = req.body.author;
-    post.title = req.body.title;
-    post.content = req.body.content;
+    const result = await db.query(
+        `SELECT * FROM blogs
+         WHERE blog_id = $1 AND creator_user_id = $2`,
+        [id, req.session.user.userId]
+    );
+
+    if (result.rows.length === 0) {
+        return res.status(403).send("You cannot edit this post.");
+    }
+
+    res.render("edit", { post: result.rows[0] });
+});
+
+app.post("/posts/:id/edit", requireLogin, async (req, res) => {
+    const id = req.params.id;
+
+    const result = await db.query(
+        `UPDATE blogs
+         SET title = $1, body = $2
+         WHERE blog_id = $3 AND creator_user_id = $4`,
+        [
+            req.body.title,
+            req.body.content,
+            id,
+            req.session.user.userId
+        ]
+    );
+
+    if (result.rowCount === 0) {
+        return res.status(403).send("You cannot edit this post.");
+    }
 
     res.redirect("/");
+});
 
-})
+app.post("/posts/:id/delete", requireLogin, async (req, res) => {
+    const id = req.params.id;
 
-app.post("/posts/:id/delete", (req, res) => {
-    const id = Number(req.params.id);
-    // findIndex finds index of element in array that matches the condition
-    // in this case, matching id
-    const postIndex = posts.findIndex(post => post.id === id);
-    // removes that post
-    posts.splice(postIndex, 1);
+    const result = await db.query(
+        `DELETE FROM blogs
+         WHERE blog_id = $1 AND creator_user_id = $2`,
+        [id, req.session.user.userId]
+    );
+
+    if (result.rowCount === 0) {
+        return res.status(403).send("You cannot delete this post.");
+    }
 
     res.redirect("/");
-})
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
