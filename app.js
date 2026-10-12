@@ -24,6 +24,34 @@ app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
 
 const posts = [];
 
+app.get("/signup", (req, res) => {
+    res.render("signup", { error: null, userId: "", name: "" });
+});
+
+app.post("/signup", async (req, res) => {
+    const userId = req.body.user_id;
+    const name = req.body.name;
+    const password = req.body.password;
+
+    const result = await db.query(
+        "SELECT * FROM users WHERE user_id = $1",
+        [userId]
+    );
+
+    if (result.rows.length > 0) {
+        return res.render("signup", {
+            error: "That user ID is already taken."
+        });
+    }
+
+    await db.query(
+        "INSERT INTO users (user_id, password, name) VALUES ($1, $2, $3)",
+        [userId, password, name]
+    );
+
+    res.redirect("/signin");
+});
+
 
 
 app.get("/", async (req, res) => {
