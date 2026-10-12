@@ -1,0 +1,29 @@
+{
+  "name": "blog-project",
+  "version": "1.0.0",
+  "description": "mini-project-1 CS 312",
+  "homepage": "https://github.com/skitsy24/CS-312-MiniProject-1#readme",
+  "bugs": {
+    "url": "https://github.com/skitsy24/CS-312-MiniProject-1/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skitsy24/CS-312-MiniProject-1.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "node": "^26.8.2"
+  },
+  "allowScripts": {
+    "node@26.8.2": true
+  }
+}

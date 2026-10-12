@@ -1,0 +1,60 @@
+<%- include("partials/header", { pageTitle: "Our Blog" }) %>
+
+<!-- CREATE POST -->
+<section class="post-form mb-5" aria-labelledby="create-heading">
+  <h2 id="create-heading">Create a Post</h2>
+
+  <form action="/posts" method="POST">
+    <div class="row g-3 mb-3">
+      <div class="col-md-5">
+        <label for="author" class="form-label">Your Name</label>
+        <input type="text" class="form-control" id="author" name="author" required>
+      </div>
+
+      <div class="col-md-7">
+        <label for="title" class="form-label">Post Title</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="content" class="form-label">Post</label>
+      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Publish Post</button>
+  </form>
+</section>
+
+<!-- POSTS -->
+<section aria-labelledby="posts-heading">
+  <h2 id="posts-heading">Recent Posts</h2>
+
+  <% if (posts.length === 0) { %>
+    <p class="empty-state">No posts yet. Create the first one!</p>
+  <% } else { %>
+    <% posts.forEach(post => { %>
+      <article class="blog-post">
+        <h3><%= post.title %></h3>
+        <p class="post-meta">By <%= post.author %></p>
+        <p class="post-content"><%= post.content %></p>
+
+        <div class="post-actions d-flex align-items-center gap-3">
+          <!-- EDIT -->
+          <a href="/posts/<%= post.id %>/edit">
+            Edit<span class="visually-hidden"> <%= post.title %></span>
+          </a>
+
+          <!-- DELETE -->
+          <form action="/posts/<%= post.id %>/delete" method="POST">
+            <button type="submit" class="delete-link">
+              Delete<span class="visually-hidden"> <%= post.title %></span>
+            </button>
+          </form>
+        </div>
+      </article>
+    <% }); %>
+  <% } %>
+</section>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,32 @@
+<%- include("partials/header", { pageTitle: "Edit Post | Our Blog" }) %>
+
+<!-- EDIT POST -->
+<section class="post-form" aria-labelledby="edit-heading">
+  <h2 id="edit-heading">Edit Post</h2>
+
+  <form action="/posts/<%= post.id %>/edit" method="POST">
+    <div class="row g-3 mb-3">
+      <div class="col-md-5">
+        <label for="author" class="form-label">Your Name</label>
+        <input type="text" class="form-control" id="author" name="author" value="<%= post.author %>" required>
+      </div>
+
+      <div class="col-md-7">
+        <label for="title" class="form-label">Post Title</label>
+        <input type="text" class="form-control" id="title" name="title" value="<%= post.title %>" required>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="content" class="form-label">Post</label>
+      <textarea class="form-control" id="content" name="content" rows="8" required><%= post.content %></textarea>
+    </div>
+
+    <!-- SAVE CHANGES -->
+    <div class="d-flex align-items-center gap-3">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</section>
+
+<%- include("partials/footer") %>
