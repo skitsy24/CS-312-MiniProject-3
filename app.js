@@ -40,7 +40,7 @@ app.post("/signup", async (req, res) => {
 
     if (result.rows.length > 0) {
         return res.render("signup", {
-            error: "That user ID is already taken."
+            error: "That user ID is already taken.", userId, name
         });
     }
 
@@ -50,6 +50,28 @@ app.post("/signup", async (req, res) => {
     );
 
     res.redirect("/signin");
+});
+
+app.get("/signin", (req, res) => {
+    res.render("signin", { error: null });
+});
+
+app.post("/signin", async (req, res) => {
+    const userId = req.body.user_id;
+    const password = req.body.password;
+
+    const result = await db.query(
+        "SELECT * FROM users WHERE user_id = $1 AND password = $2",
+        [userId, password]
+    );
+
+    if (result.rows.length === 0) {
+        return res.render("signin", {
+            error: "Incorrect user ID or password."
+        });
+    }
+
+    res.redirect("/");
 });
 
 

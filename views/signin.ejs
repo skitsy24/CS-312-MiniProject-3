@@ -1,0 +1,25 @@
+<%- include("partials/header", { pageTitle: "Sign In | Our Blog" }) %>
+
+<section class="post-form" aria-labelledby="signin-heading">
+  <h2 id="signin-heading">Sign In</h2>
+
+  <% if (error) { %>
+    <p class="alert alert-danger" role="alert"><%= error %></p>
+  <% } %>
+
+  <form action="/signin" method="POST">
+    <div class="mb-3">
+      <label for="user_id" class="form-label">User ID</label>
+      <input type="text" class="form-control" id="user_id" name="user_id" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sign In</button>
+  </form>
+</section>
+
+<%- include("partials/footer") %>
