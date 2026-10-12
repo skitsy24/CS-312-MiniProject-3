@@ -1,6 +1,7 @@
 import express from "express";
 import pg from "pg";
 import dotenv from "dotenv";
+import session from "express-session";
 
 dotenv.config();
 
@@ -21,6 +22,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static("public"));
 app.use("/bootstrap", express.static("node_modules/bootstrap/dist"));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use((req, res, next) => {
+    res.locals.currentUser = req.session.user || null;
+    next();
+});
 
 const posts = [];
 
@@ -71,27 +83,40 @@ app.post("/signin", async (req, res) => {
         });
     }
 
+    const user = result.rows[0];
+    req.session.user = {
+        userId: user.user_id,
+        name: user.name
+    };
+
     res.redirect("/");
 });
 
-
+app.post("/logout", (req, res, next) => {
+    req.session.destroy((error) => {
+        if (error) return next(error);
+        res.clearCookie("connect.sid");
+        res.redirect("/");
+    });
+});
 
 app.get("/", async (req, res) => {
     const result = await db.query("SELECT * FROM blogs");   
 
-    console.log(result.rows);
-
-    res.render("index", { posts: result.rows});
+    res.render("index", {
+        posts: result.rows,
+        currentUser: req.session.user || null
+    });
 });
 
 app.post("/posts", async (req, res) => {
+    if (!req.session.user) return res.redirect("/signin");
 
     const title = req.body.title;
     const body = req.body.content;
 
-    // temp, no login yet
-    const creatorUserId = "ohyeah?";
-    const creatorName = "Steve Lacy";
+    const creatorUserId = req.session.user.userId;
+    const creatorName = req.session.user.name;
 
     await db.query(
         `INSERT INTO blogs

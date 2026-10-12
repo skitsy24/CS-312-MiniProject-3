@@ -1,20 +1,21 @@
 <%- include("partials/header", { pageTitle: "Our Blog" }) %>
 
+<% if (currentUser) { %>
+  <section class="mb-4" aria-label="Your account">
+    <p class="mb-2">Welcome, <%= currentUser.name %></p>
+    <form action="/logout" method="POST">
+      <button type="submit" class="btn btn-primary">Log Out</button>
+    </form>
+  </section>
+
 <!-- CREATE POST -->
 <section class="post-form mb-5" aria-labelledby="create-heading">
   <h2 id="create-heading">Create a Post</h2>
 
   <form action="/posts" method="POST">
-    <div class="row g-3 mb-3">
-      <div class="col-md-5">
-        <label for="author" class="form-label">Your Name</label>
-        <input type="text" class="form-control" id="author" name="author" required>
-      </div>
-
-      <div class="col-md-7">
-        <label for="title" class="form-label">Post Title</label>
-        <input type="text" class="form-control" id="title" name="title" required>
-      </div>
+    <div class="mb-3">
+      <label for="title" class="form-label">Post Title</label>
+      <input type="text" class="form-control" id="title" name="title" required>
     </div>
 
     <div class="mb-3">
@@ -25,6 +26,9 @@
     <button type="submit" class="btn btn-primary">Publish Post</button>
   </form>
 </section>
+<% } else { %>
+  <p class="mb-5">To create a post, <a href="/signin">sign in</a> or <a href="/signup">sign up</a>.</p>
+<% } %>
 
 <!-- POSTS -->
 <section aria-labelledby="posts-heading">
